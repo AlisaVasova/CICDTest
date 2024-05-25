@@ -17,7 +17,7 @@ jobs:
     
     - uses: hoverkraft-tech/compose-action@v1.5.1
       with:
-        compose-file: "./docker-compose.yaml"
+        compose-file: "./docker-compose_.yaml"
       env:
         CUSTOM_VARIABLE: "test"
     
