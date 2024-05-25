@@ -9,9 +9,7 @@ x-def-logging: &default-logging
       loki-retries: 2
       loki-max-backoff: 1000ms
       loki-timeout: 1s
-      loki-pipeline-stages:
-          - stage: extract
-            source: log
+      loki-pipeline-stages: "[{\"stage\":\"extract\",\"source\":\"log\"}]"
 
 services:
   app:
