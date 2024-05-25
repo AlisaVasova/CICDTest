@@ -48,7 +48,7 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             mkdir -p vlasova
-            cd vlasova
+      - uses: actions/checkout@v4
       - name: send code   
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -58,4 +58,5 @@ jobs:
          port: ${{ secrets.PORT }}
          source: "*"
          target: vlasova
+         rm: True
 
