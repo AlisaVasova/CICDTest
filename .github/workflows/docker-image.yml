@@ -50,11 +50,12 @@ jobs:
             mkdir -p vlasova
             cd vlasova
       - name: send code   
-        uses: garygrossgarten/github-action-scp@release
+        uses: appleboy/scp-action@v0.1.7
         with:
-          local: .
-          remote: vlasova
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
+         host: ${{ secrets.HOST }}
+         username: ${{ secrets.USERNAME }}
+         password: ${{ secrets.PASSWORD }}
+         port: ${{ secrets.PORT }}
+         source: "*"
+         target: vlasova
 
