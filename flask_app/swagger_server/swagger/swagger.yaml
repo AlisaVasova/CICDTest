@@ -1,0 +1,161 @@
+openapi: 3.0.3
+info:
+  title: Book Reader API
+  description: API for a book reading application
+  contact:
+    email: vlasovaru931@gmail.com
+  version: 1.0.0
+servers:
+- url: https://api.bookreader.com/
+tags:
+- name: book
+  description: Operations about books
+paths:
+  /books:
+    get:
+      tags:
+      - book
+      summary: Get all books
+      operationId: get_all_books
+      responses:
+        "200":
+          description: A list of all books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+                x-content-type: application/json
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+      x-openapi-router-controller: swagger_server.controllers.book_controller
+    post:
+      tags:
+      - book
+      summary: Add a new book
+      operationId: add_book
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+        required: true
+      responses:
+        "201":
+          description: Book added successfully
+        "400":
+          description: Invalid input
+      x-openapi-router-controller: swagger_server.controllers.book_controller
+  /books/{bookId}:
+    get:
+      tags:
+      - book
+      summary: Get a book
+      operationId: get_book
+      parameters:
+      - name: bookId
+        in: path
+        description: ID of the book to retrieve
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Details of the specified book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Book not found
+      x-openapi-router-controller: swagger_server.controllers.book_controller
+    put:
+      tags:
+      - book
+      summary: Update a book
+      operationId: update_book
+      parameters:
+      - name: bookId
+        in: path
+        description: ID of the book to update
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+        required: true
+      responses:
+        "200":
+          description: Book updated successfully
+        "400":
+          description: Invalid input
+        "404":
+          description: Book not found
+      x-openapi-router-controller: swagger_server.controllers.book_controller
+    delete:
+      tags:
+      - book
+      summary: Delete a book
+      operationId: delete_book
+      parameters:
+      - name: bookId
+        in: path
+        description: ID of the book to delete
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: Book deleted successfully
+        "404":
+          description: Book not found
+      x-openapi-router-controller: swagger_server.controllers.book_controller
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Id of the book
+          format: int64
+          example: 1
+        title:
+          type: string
+          description: Title of the book
+          example: Евгений Онегин
+        author:
+          type: string
+          description: Author of the book
+          example: А.С. Пушкин
+        genre:
+          type: string
+          description: Genre of the book
+          example: Роман
+        published_year:
+          type: integer
+          description: Year the book was published
+          format: int32
+          example: 1831
+      example:
+        published_year: 1831
+        author: А.С. Пушкин
+        genre: Роман
+        id: 1
+        title: Евгений Онегин
+

@@ -1,0 +1,97 @@
+version: "3"
+
+x-def-logging: &default-logging
+  logging:
+    driver: "loki"
+    options:
+      loki-url: "http://localhost:3100/loki/api/v1/push"
+      loki-batch-size: "100"
+      loki-retries: 2
+      loki-max-backoff: 1000ms
+      loki-timeout: 1s
+
+services:
+  app:
+    build: ./flask_app/
+    <<: *default-logging
+    ports:
+      - "8000:8000"
+    environment:
+      STATSD_HOST: "statsd-exporter"
+      STATSD_PORT: "9125"
+      OTEL_PYTHON_LOG_CORRELATION: "true"
+    networks:
+      - traces
+  statsd-exporter:
+    image: prom/statsd-exporter:v0.22.4
+    ports:
+      - "9125:9125"
+      - "9102:9102"
+    networks:
+      - traces
+  prometheus:
+    image: prom/prometheus:v2.33.5
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./etc/prometheus:/workspace
+    command:
+      - '--config.file=/workspace/prometheus.yml'
+    networks:
+      - traces
+  loki:
+    hostname: loki
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    networks:
+      - traces
+  grafana:
+    image: grafana/grafana:10.0.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./etc/grafana/:/etc/grafana/provisioning/datasources
+      - ./etc/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - ./etc/dashboards:/etc/grafana/dashboards
+    depends_on:
+      - prometheus
+      - tempo
+      - loki
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    networks:
+      - traces
+  tempo:
+    hostname: tempo
+    image: grafana/tempo:latest
+    ports:
+      - "3200" # tempo http
+      - "9095"   # tempo grpc
+      - "14268" # jaeger ingest
+      - "4318"   # otlp http
+      - "4317"   # otlp grpc
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - "./etc/tempo/tempo.yaml:/etc/tempo.yaml"
+    networks:
+      - traces
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    ports:
+      - "6831:6831" # ???
+      - "14268:14268" # jaeger ingest
+      - "4317:4317" # otlp grpc
+    volumes:
+      - ./etc/otel/otel-collector.yaml:/etc/otel-collector.yaml
+    command:
+      - --config=/etc/otel-collector.yaml
+    networks:
+      - traces
+
+networks:
+  traces:
+    name: traces
+    driver: bridge
