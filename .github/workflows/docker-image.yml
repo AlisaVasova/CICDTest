@@ -59,4 +59,13 @@ jobs:
          source: "*"
          target: vlasova
          rm: True
-
+      - name: run docker compose
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            docker-compose build
+            docker-compose up -d
