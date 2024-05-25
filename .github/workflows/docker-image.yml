@@ -39,15 +39,6 @@ jobs:
       needs: build
       runs-on: ubuntu-latest
       steps:
-      - name: create folder
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          port: ${{ secrets.PORT }}
-          script: |
-            mkdir -p vlasova
       - uses: actions/checkout@v4
       - name: send code   
         uses: appleboy/scp-action@v0.1.7
@@ -67,5 +58,8 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
+            cd vlasova
+            docker stop $(docker ps -a -q)
+            docker rm $(docker ps -a -q)
             docker-compose build
             docker-compose up -d
