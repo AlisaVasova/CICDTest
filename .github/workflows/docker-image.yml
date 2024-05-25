@@ -39,7 +39,7 @@ jobs:
       needs: build
       runs-on: ubuntu-latest
       steps:
-      - name: executing remote ssh commands using password
+      - name: create folder
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
@@ -49,4 +49,12 @@ jobs:
           script: |
             mkdir -p vlasova
             cd vlasova
+      - name: send code   
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: .\
+          remote: vlasova
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
 
