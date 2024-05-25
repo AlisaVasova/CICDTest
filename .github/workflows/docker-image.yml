@@ -14,13 +14,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
-    - uses: hoverkraft-tech/compose-action@v1.5.1
-      with:
-        compose-file: "./docker-compose_.yaml"
-      env:
-        CUSTOM_VARIABLE: "test"
-    
+
+    - name: Build the stack
+      run: |
+        docker-compose -f docker-compose.yaml build
+        docker-compose -f docker-compose.yaml up -d
+ 
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
