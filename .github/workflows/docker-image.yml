@@ -17,8 +17,8 @@ jobs:
 
     - name: Build the stack
       run: |
-        docker-compose -f docker-compose.yaml build
-        docker-compose -f docker-compose.yaml up -d
+        docker-compose -f docker-compose_.yaml build
+        docker-compose -f docker-compose_.yaml up -d
  
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
